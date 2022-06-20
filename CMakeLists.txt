@@ -14,7 +14,7 @@ find_package(HDF5 COMPONENTS C HL)
 include_directories(include)
 file(GLOB SOURCE "src/*.cc")
 
-# Compilation : library for external use
+# Compile : library for external use
 add_library(DataStream SHARED ${SOURCE})
 target_include_directories(DataStream PUBLIC ${HDF5_C_INCLUDE_DIRS})
 target_link_libraries(DataStream PUBLIC ${HDF5_C_LIBRARIES}
@@ -23,3 +23,6 @@ target_link_libraries(DataStream PUBLIC ${HDF5_C_LIBRARIES}
 set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include 
 								 ${HDF5_C_INCLUDE_DIRS}
     CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
+
+# Compile : example programs
+add_subdirectory(example)
