@@ -1,19 +1,19 @@
 # DataStream
 
-DataStream is  a C++ wrapper  based on HDF5 C API for
-storing data in an eventwise (e.g. Monte Carlo  event 
-generation)  or stepwise (e.g. solving  initial value 
-problems)  manner.  In  principle, data for  an event 
-(step) is stacked on top of data  from  the  previous 
-event (step). In case of multi-dimensional data, such 
-stacking  is  always  done  along the first axis. The 
-very  purpose  of  DataStream  is  to simplify such a
-data-storing process in HDF5 files within a few lines 
-of  code and  also generalize it for any type of data
-with arbitrary dimensions.
+DataStream is a C++ wrapper based on [HDF5 C API](http://portal.hdfgroup.org/display/HDF5/Core+Library)
+for  storing data  in an  eventwise (e.g. Monte Carlo 
+event  generation) or stepwise  (e.g. solving initial 
+value  problems) manner.  In principle,  data for  an 
+event  (step)  is  stacked  on top  of data  from the
+previous event  (step). In case  of multi-dimensional 
+data, such stacking  is always  done  along the first
+axis. The  very purpose of DataStream  is to simplify
+such  a data-storing  process in  HDF5 files within a
+few lines of code and also generalize it for any type
+of data with arbitrary dimensions.
 
 ## Installation
- 
+
 ### Pre-requisites
   - `cmake` to build DataStream and external plugins,
   - `zlib` and `libaec` for pre-defined  compression
@@ -28,36 +28,37 @@ with arbitrary dimensions.
   ```
 
 ### HDF5 C
-DataStream requires only C bindings that can be built
-from [source](https://github.com/HDFGroup/hdf5/tags)
+
+<details>
+  <summary> Expand </summary>
+
+  DataStream requires  only  C bindings  that  can be
+  built from source
 
   - Create an  installation directory  and  define an
     environment  variable  using  its' absolute  path
     (for ease of configuration later)
 
     ```shell
-    mkdir /path/to/HDF5
-    export HDF5_Path=/path/to/HDF5
+    mkdir path/to/HDF5
+    export HDF5_Path=path/to/HDF5
     ```
 
-    *Append last line to* `.bashrc` *(or* `.profile` 
-    *)*
+    *Append last line to* `.bashrc` (*or* `.profile`)
 
-  - Extract the source and create a build directory
-    inside
+  - Extract the [source](https://github.com/HDFGroup/hdf5/tags) (pick any one)
 
     ```shell
     tar -xzf hdf5-hdf5-x_yy_z.tar.gz
-    cd hdf5-hdf5-x_yy_z && mkdir build
     ```
 
-  - Launch `configure`  script  from  build directory
-    specifying  installation path  and  configuration 
-    options for compression libraries
+  - Launch `configure` script specifying installation
+    path  and configuration  options for  compression 
+    libraries
 
     ```shell
-    cd build
-    ../configure --prefix=/path/to/HDF5 --with-zlib --with-szlib
+    cd hdf5-hdf5-x_yy_z
+    ./configure --prefix=$HDF5_Path --with-zlib --with-szlib
     make -jN install
     ```
 
@@ -72,11 +73,17 @@ from [source](https://github.com/HDFGroup/hdf5/tags)
     h5cc --version
     ```
 
+</details>
+
 ### External Plugins (Optional)
-HDF5  (version >=  `1.8.11`) enables  [dynamic filter
-loading](https://docs.hdfgroup.org/hdf5/rfc/HDF5DynamicallyLoadedFilters.pdf)  e.g. applying  non-native  compression
-filters at runtime. DataStream  comes configured with
-two such methods BZip2 and ZStd.
+
+<details>
+  <summary> Expand </summary>
+
+  HDF5 (version >= `1.8.11`) enables [dynamic filter loading](https://docs.hdfgroup.org/hdf5/rfc/HDF5DynamicallyLoadedFilters.pdf) 
+  e.g.  applying  non-native  compression  filters at 
+  runtime. DataStream  comes configured with two such
+  methods BZip2 and ZStd.
 
   - Install corresponding libraries
     
@@ -104,12 +111,17 @@ two such methods BZip2 and ZStd.
     make install
     ```
 
-  - Define the environment variable (append to `.bashrc`)
+  - Define environment variable for plugin installation
+   (append to `.bashrc`)
+
     ```shell
     export HDF5_PLUGIN_PATH=$HDF5_Path/lib/plugins
     ```
 
+</details>
+
 ### DataStream
+
 Building DataStream as a standalone library is pretty
 straight-forward
 
@@ -117,11 +129,21 @@ straight-forward
 git clone https://github.com/iamSHAN98/DataStream.git
 cd DataStream
 mkdir build && cd build
-cmake .. && make -jN
+cmake ..
+make -jN
 ```
 
-## Building With DataStream
+Above defines the variables `DataStream_INCLUDE_DIRS`
+(associated  header files) and  `DataStream` (shared
+library object `libDataStream`) required for linking
+code against DataStream as an external library (see
+[example/CMakeLists.txt](example/CMakeLists.txt)). In that case, provide 
+DataStream source path to project's CMakeLists.txt
 
-### Using Makefile
+  ```cmake
+  # Project's CMakeLists.txt
+  set(DSPATH path/to/source)
+  add_subdirectory(${DSPATH} DataStream)
+  ```
 
-### Using CMake
+## [Using DataStream](example/README.md)
