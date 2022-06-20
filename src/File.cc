@@ -6,6 +6,9 @@ namespace DataStream{
 	void File :: Open(const str& Name, Access Flag){
 		Index = 0;
 
+		// Disable error stack
+		H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+
 		switch(Flag){
 			case Access::Write :
 				Vault = H5Fcreate(Name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
@@ -19,9 +22,6 @@ namespace DataStream{
 				Vault = H5Fopen(Name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT); 
 				break;
 		}
-
-		// Disable error stack
-		H5Eset_auto(H5E_DEFAULT, NULL, NULL);
 	}
 
 	void File :: Add(const str& Path, void *Addr, Type DType, 

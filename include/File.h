@@ -1,12 +1,6 @@
 /*
 		File-handler for storing and retrieving data
 		event-by-event in HDF5 format.
-
-		Refer to 'File.cc' in 'src' directory for the
-		definitions of rest of the class methods.
-
-		Refer to examples given in 'example' directory 
-		for possible use cases.
 */
 
 #pragma once
@@ -48,7 +42,7 @@ namespace DataStream{
 			}
 
 			// Data compression
-			void SetCompression(Compress Filter, int Level){
+			void SetCompression(Compress Filter, uint Level){
 				for(auto& Entry : DataSets)
 					Entry.SetCompression(Filter, Level);
 			}

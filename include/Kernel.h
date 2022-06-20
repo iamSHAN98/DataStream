@@ -1,12 +1,6 @@
 /*
 		Kernel methods provide means of reading and
 		writing data to HDF5 datasets.
-
-		Refer to 'Kernel.cc' in 'src' directory for
-		definitions of rest of the class methods.
-
-		Refer to examples given in 'example' directory 
-		for possible use cases.
 */
 
 #pragma once
@@ -24,7 +18,7 @@ namespace DataStream{
 
 		// Compression
 		Compress Filter;
-		int Level;
+		uint Level;
 		Compressor Obj;
 
 		// HDF5 object identifiers
@@ -50,7 +44,6 @@ namespace DataStream{
 		public :
 
 			Kernel() = default;
-			~Kernel() = default;
 
 			// Write mode
 			Kernel(hid_t Grp, const std::string& Name, MetaData In){
@@ -61,6 +54,8 @@ namespace DataStream{
 			Kernel(hid_t Grp, const std::string& Name){
 				Initialize(Grp, Name);
 			}
+
+			~Kernel() = default;
 
 			// Initializers
 			void Initialize(hid_t, const std::string&, MetaData);
@@ -80,13 +75,14 @@ namespace DataStream{
 			}
 
 			// Data compression
-			void SetCompression(Compress Choice, int Strength){
+			void SetCompression(Compress Choice, uint Strength){
+				if(ReadMode) return;
 				Filter = Choice, Level = Strength;
 			}
 
 			// Getter
 			int GetEvent(){ return N; }
-			std::vector<hsize_t> GetDimension(){ return Info.Dim; }
+			std::vector<hsize_t> GetShape(){ return Info.Dim; }
 			std::string GetPath(){ return Path; }
 	};
 
