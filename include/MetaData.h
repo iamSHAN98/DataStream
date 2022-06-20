@@ -1,12 +1,6 @@
 /*
 		MetaData holds structural information about the
 		data to be stored, mainly type and dimension.
-
-		Refer to 'MetaData.cc' in 'src' directory for
-		definitions of rest of the class methods.
-
-		Refer to examples given in 'example' directory 
-		for possible use cases.
 */
 
 #pragma once
@@ -18,12 +12,21 @@
 
 namespace DataStream{
 
+	// Maintain order as in Keyword.h
+	const hid_t ListType[] = {
+		H5T_NATIVE_INT, H5T_NATIVE_UINT,
+		H5T_NATIVE_LONG, H5T_NATIVE_ULONG,
+		H5T_NATIVE_FLOAT, H5T_NATIVE_DOUBLE,
+		H5T_NATIVE_LDOUBLE, H5T_NATIVE_HBOOL,
+		H5T_NATIVE_HSIZE,
+	};
+
 	class MetaData{
 
 		private :
 
 			Type DType;
-			std::vector<hsize_t> EventDim, Dim;		// Dimension : single event, total
+			std::vector<hsize_t> Dim;
 			std::string Name;
 			std::size_t Size;
 			bool IsArray;
@@ -44,8 +47,8 @@ namespace DataStream{
 			MetaData() = default;
 
 			MetaData(Type T, std::vector<hsize_t> D = {1}, std::string N = ""){
-				DType = T, EventDim = D, Name = N;
-				Dim = EventDim, Size = 0;
+				DType = T, Dim = D, Name = N;
+				Size = 0;
 				IsArray = false;
 			}
 
@@ -73,14 +76,11 @@ namespace DataStream{
 			void AddMember(B A::*Member, std::string N, Type T, 
 										 std::vector<hsize_t> D = {1}){
 				MetaData Info(T, D, N);
-				if((D.size() > 1) || (D[0] > 1)){
+				if((D.size() > 1) || (D[0] > 1))
 					Info.IsArray = true;
-					Info.EventDim = {1};							// Whole array is a single entity
-				}
 
 				AddMember(Member, Info);
 			}
-
 
 			// Getter
 			hid_t GetDataType();

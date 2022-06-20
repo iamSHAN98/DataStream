@@ -1,3 +1,9 @@
+/*
+		Methods for searching, creating and reading
+		attributes from given  path, implemented in
+		setter, getter methods of Kernel and File.
+*/
+
 #pragma once
 #include "MetaData.h"
 #include "ErrorHandler.h"

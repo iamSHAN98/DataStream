@@ -1,3 +1,8 @@
+/*
+		Set of error messages for handling HDF5 objects
+		e.g. path (links), attributes, datasets etc.
+*/
+
 #pragma once
 #include <string>
 #include <stdexcept>
@@ -29,20 +34,15 @@ namespace DataStream{
 	}
 
 	static void LinkCreationError(std::string Path){
-		throw std::runtime_error("Final/intermediate link(s) in " + Path +
-														 " may correspond to existing dataset(s)");
+		throw std::runtime_error(Path + " creation failed");
 	}
 
-	static void DataSetError(std::string Path){
-		throw std::runtime_error(Path + " happens to be a group");
-	}
-
-	static std::string AlgorithmError(std::string Name){
-		throw "Compression algorithm " + Name + " is not registered";
+	static void LinkAccessError(std::string Path){
+		throw std::runtime_error(Path + " access failed");
 	}
 
 	static std::string CompressionError(std::string Name){
-		throw std::runtime_error("Compression algorithm " + Name + " can't be used");
+		throw std::domain_error("Compression method (name/id) " + Name + " is not available");
 	}
 
 }

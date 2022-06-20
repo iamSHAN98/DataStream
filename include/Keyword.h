@@ -12,23 +12,14 @@ namespace DataStream{
 		Integer, UInteger, Long,											// C datatypes
 		ULong, Float, Double,
 		LDouble, Bool, HSize,													// Keep adding
-		TypeEnd																				// Defines end of list
-	} Type;													
-
-	// In that order :D
-	const hid_t ListType[] = {
-		H5T_NATIVE_INT, H5T_NATIVE_UINT,
-		H5T_NATIVE_LONG, H5T_NATIVE_ULONG,
-		H5T_NATIVE_FLOAT, H5T_NATIVE_DOUBLE,
-		H5T_NATIVE_LDOUBLE, H5T_NATIVE_HBOOL,
-		H5T_NATIVE_HSIZE,
-	};
+		TypeEnd																				// End of list
+	} Type;
 
 	// Compression algorithms
 	typedef enum {
 		GZip = 0, SZip,
 		BZip2, ZStd,
-		CompressEnd																		// Define end of list
+		CompressEnd																		// End of list
 	} Compress;
 
 }

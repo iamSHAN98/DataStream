@@ -3,7 +3,7 @@
 namespace DataStream{
 
 	hid_t MetaData::CreateString(){
-		return H5Tcreate(H5T_STRING, H5T_VARIABLE);
+		return H5Tcreate(H5T_STRING, Dim[0] + 1);
 	}
 
 	hid_t MetaData::CreateCompound(){
@@ -44,9 +44,9 @@ namespace DataStream{
 	}
 
 	hid_t MetaData::GetDataSpace(){
-		return H5Screate_simple(EventDim.size(), EventDim.data(), NULL);
+		return H5Screate_simple(Dim.size(), Dim.data(), NULL);
 	}
 
-	size_t MetaData :: GetDimension(){ return EventDim.size(); }
+	size_t MetaData :: GetDimension(){ return Dim.size(); }
 
 }
