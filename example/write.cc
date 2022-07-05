@@ -43,7 +43,7 @@ int main(int argc, char **argv){
 
 	// Attributes
 	char Gen[] = "Mersenne-Twister";
-	Obj.SetAttribute("Group", "Generator", Gen, DataStream::String, {sizeof(Gen)});
+	Obj.SetAttribute("Group", "Generator", Gen, DataStream::String);
 
 	// Store data
 	for(int n = 0; n < N; n++){

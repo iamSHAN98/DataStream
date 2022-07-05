@@ -3,7 +3,7 @@
 namespace DataStream{
 
 	hid_t MetaData::CreateString(){
-		return H5Tcreate(H5T_STRING, Dim[0] + 1);
+		return H5Tcreate(H5T_STRING, Dim[0] + 1);		// +1 : terminating null character
 	}
 
 	hid_t MetaData::CreateCompound(){

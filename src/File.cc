@@ -1,3 +1,4 @@
+#include <cstring>
 #include "File.h"
 using str = std::string;
 
@@ -25,7 +26,12 @@ namespace DataStream{
 	}
 
 	void File :: Add(const str& Path, void *Addr, Type DType, 
-									 std::vector<hsize_t> Dim){
+									 std::vector<hsize_t> D){
+		// Obtain string length
+		auto Dim = D;
+		if(DType == Type::String)
+			Dim = {strlen(static_cast<const char*>(Addr))};
+
 		Add(Path, Addr, MetaData(DType, Dim));
 	}
 
@@ -42,7 +48,12 @@ namespace DataStream{
 	}
 
 	void File :: SetAttribute(const str& Path, const str& Name, const void *Addr, 
-														Type DType, std::vector<hsize_t> Dim){
+														Type DType, std::vector<hsize_t> D){
+		// Obtain string length
+		auto Dim = D;
+		if(DType == Type::String)
+			Dim = {strlen(static_cast<const char*>(Addr))};
+
 		SetAttribute(Path, Name, Addr, MetaData(DType, Dim));
 	}
 
