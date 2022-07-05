@@ -18,11 +18,11 @@ namespace DataStream{
 	}
 
 	static void PathError(std::string Path){
-		throw std::runtime_error(Path + " already exists");
+		throw std::runtime_error("Can't overwrite existing path " + Path);
 	}
 
-	static void NoPathError(std::string Path){
-		throw std::runtime_error("Can't locate " + Path);
+	static void NoPathError(std::string Path, std::string Object){
+		throw std::runtime_error("Can't locate path " + Path + " during initialization of " + Object);
 	}
 
 	static void AttributeError(std::string Name, std::string Path){
@@ -30,19 +30,19 @@ namespace DataStream{
 	}
 
 	static void NoAttributeError(std::string Name, std::string Path){
-		throw std::runtime_error("Can't locate attribute " + Name + " at " + Path);
+		throw std::runtime_error("Attribute " + Name + " not found at " + Path);
 	}
 
 	static void LinkCreationError(std::string Path){
-		throw std::runtime_error(Path + " creation failed");
+		throw std::runtime_error("Failed to create path " + Path);
 	}
 
 	static void LinkAccessError(std::string Path){
-		throw std::runtime_error(Path + " access failed");
+		throw std::runtime_error("Failed to access path " + Path);
 	}
 
 	static std::string CompressionError(std::string Name){
-		throw std::domain_error("Compression method (name/id) " + Name + " is not available");
+		throw std::domain_error("Compression method (name/id) " + Name + " not available");
 	}
 
 }

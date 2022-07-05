@@ -27,7 +27,7 @@ namespace DataStream{
 
 	void File :: Add(const str& Path, void *Addr, Type DType, 
 									 std::vector<hsize_t> D){
-		// Obtain string length
+		// String length deduction
 		auto Dim = D;
 		if(DType == Type::String)
 			Dim = {strlen(static_cast<const char*>(Addr))};
@@ -42,14 +42,14 @@ namespace DataStream{
 	}
 
 	void File :: Add(const str& Path, void *Addr){
-		if(!CheckPath(Path)) NoPathError(Path);
+		if(!CheckPath(Path)) NoPathError(Path, "dataset");
 		DataSets.push_back(Kernel(Vault, Path));
 		Containers.push_back(Addr);
 	}
 
 	void File :: SetAttribute(const str& Path, const str& Name, const void *Addr, 
 														Type DType, std::vector<hsize_t> D){
-		// Obtain string length
+		// String length deduction
 		auto Dim = D;
 		if(DType == Type::String)
 			Dim = {strlen(static_cast<const char*>(Addr))};
@@ -59,12 +59,12 @@ namespace DataStream{
 
 	void File :: SetAttribute(const str& Path, const str& Name, 
 														const void *Addr, MetaData Info){
-		if(!CheckPath(Path)) NoPathError(Path);
+		if(!CheckPath(Path)) NoPathError(Path, "attribute " + Name);
 		WriteAttribute(Vault, Path, Name, Addr, Info);
 	}
 
 	void File :: GetAttribute(const str& Path, const str& Name, void *Addr){
-		if(!CheckPath(Path)) NoPathError(Path);
+		if(!CheckPath(Path)) NoPathError(Path, "attribute " + Name);
 		ReadAttribute(Vault, Path, Name, Addr);
 	}
 
