@@ -20,8 +20,8 @@ target_include_directories(DataStream PUBLIC ${HDF5_C_INCLUDE_DIRS})
 target_link_libraries(DataStream PUBLIC ${HDF5_C_LIBRARIES}
 										${HDF5_C_HL_LIBRARIES})
 
-set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include 
-								 ${HDF5_C_INCLUDE_DIRS}
+set(${PROJECT_NAME}_INCLUDE ${PROJECT_SOURCE_DIR}/include 
+							${HDF5_C_INCLUDE_DIRS}
     CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
 
 # Compile : example programs
