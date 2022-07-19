@@ -133,7 +133,7 @@ cmake ..
 make -jN
 ```
 
-Above defines the variables `DataStream_INCLUDE_DIRS`
+Above defines the CMake variables `DataStream_INCLUDE`
 (associated  header files) and  `DataStream` (shared
 library object `libDataStream`) required for linking
 code against DataStream as an external library (see
@@ -147,3 +147,5 @@ DataStream source path to project's CMakeLists.txt
   ```
 
 ## [Using DataStream](example/README.md)
+
+## [DataStream in Python](python/README.md)
