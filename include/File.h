@@ -13,7 +13,7 @@ namespace DataStream{
 
 		private :
 
-			hid_t Vault;
+			hid_t Vault = -1;
 
 			int Index;
 			std::vector<Kernel> DataSets;
@@ -68,10 +68,15 @@ namespace DataStream{
 			}
 
 			void Close(){
-				for(auto& Entry : DataSets)
-					Entry.Close();
+				for(auto& Entry : DataSets) Entry.Close();
+				DataSets.clear();
+				Containers.clear();
+
 				H5Fclose(Vault);
+				Vault = -1;
 			}
+
+			bool CheckOpen(){ return Vault >= 0; }
 
 			bool CheckPath(const std::string& Path){
 				return H5LTpath_valid(Vault, Path.c_str(), true);
