@@ -24,6 +24,7 @@ namespace DataStream{
 				CompressionError(std::to_string(Choice));
 
 			Obj = ListAlgo[Choice];
+			if(!CheckAlgorithm(Obj.Filter)) CompressionError(Obj.Name);
 
 			int n = (Strength - Obj.Min)/Obj.Step;					// Set compression level
 			Level = Obj.Min + n*Obj.Step;										// Between Min and Max
@@ -43,8 +44,6 @@ namespace DataStream{
 					H5Pset_filter(DProp, Obj.Filter, H5Z_FLAG_MANDATORY, 1, &Level);
 					break;
 			}
-
-			if(!CheckAlgorithm(Obj.Filter)) CompressionError(Obj.Name);
 		}
 		catch(std::domain_error Err){
 			std::cout << Err.what() << "\nUsing default method : GZip\n";
