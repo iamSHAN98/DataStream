@@ -28,7 +28,7 @@ namespace DataStream{
 			ConfigureProperty();
 		}
 		else{
-			N = Length;
+			NEntry = Length;
 
 			// Configure HDF5 instances
 			ConfigureType();
@@ -36,8 +36,7 @@ namespace DataStream{
 			ConfigureProperty();
 
 			// Create dataset
-			DSet = H5Dcreate(Root, Path.c_str(), DType, DSpace, 
-											 CProp, DProp, H5P_DEFAULT);
+			DSet = H5Dcreate(Root, Path.c_str(), DType, DSpace, CProp, DProp, H5P_DEFAULT);
     	if(DSet < 0) LinkCreationError(Path);
 
     	ConfigureAttribute();
@@ -53,7 +52,7 @@ namespace DataStream{
 		H5Sselect_hyperslab(DSpace, H5S_SELECT_SET, Index.data(), NULL, Info.Dim.data(), NULL);
 
 		// Write data
-		H5Dwrite(DSet, DType, EventSpace, DSpace, H5P_DEFAULT, Data); 
+		H5Dwrite(DSet, DType, ESpace, DSpace, H5P_DEFAULT, Data); 
 
 		// Update index
 		Index[0] += Info.Dim[0];
@@ -70,7 +69,7 @@ namespace DataStream{
 		H5Sselect_hyperslab(DSpace, H5S_SELECT_SET, Index.data(), NULL, Info.Dim.data(), NULL);
 
 		// Read data
-		H5Dread(DSet, DType, EventSpace, DSpace, H5P_DEFAULT, Data);
+		H5Dread(DSet, DType, ESpace, DSpace, H5P_DEFAULT, Data);
 	}
 
 	void Kernel :: ConfigureType(){
@@ -85,14 +84,14 @@ namespace DataStream{
     	H5Sget_simple_extent_dims(DSpace, DataDim.data(), NULL);
 
 			Info.Dim = DataDim; 
-			Info.Dim[0] = DataDim[0]/N;
-			EventSpace = Info.GetDataSpace();
+			Info.Dim[0] = DataDim[0]/NEntry;
+			ESpace = Info.GetDataSpace();
 		}
 		else{
-			EventSpace = Info.GetDataSpace();
+			ESpace = Info.GetDataSpace();
 
 			DataDim = Info.Dim; 
-			DataDim[0] *= N;
+			DataDim[0] *= NEntry;
 			
 			auto MaxDim = Info.Dim; 
 			MaxDim[0] = H5S_UNLIMITED;	
@@ -113,7 +112,7 @@ namespace DataStream{
 			
 			// Create chunked data
 			auto ChunkDim = Info.Dim; 
-			ChunkDim[0] = (ChunkMin > N) ? N : ChunkMin;
+			ChunkDim[0] = (ChunkMin > NEntry) ? NEntry : ChunkMin;
     	H5Pset_chunk(DProp, ChunkDim.size(), ChunkDim.data());
     	
     	// Compress data
@@ -127,13 +126,12 @@ namespace DataStream{
 
 	void Kernel :: ConfigureAttribute(){
 		if(ReadMode){
-			ReadAttribute(DSet, ".", "Event", &N);
+			ReadAttribute(DSet, ".", "NEntry", &NEntry);
 			ReadAttribute(DSet, ".", "Shape", Info.Dim.data());
 		}
 		else{
-			WriteAttribute(DSet, ".", "Event", &N, MetaData(Type::Integer));
-			WriteAttribute(DSet, ".", "Shape", Info.Dim.data(), 
-										 MetaData(Type::HSize, Info.Dim));
+			WriteAttribute(DSet, ".", "NEntry", &NEntry, MetaData(Type::Integer));
+			WriteAttribute(DSet, ".", "Shape", Info.Dim.data(), MetaData(Type::HSize, Info.Dim));
 		}
 	}
 

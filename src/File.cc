@@ -25,8 +25,7 @@ namespace DataStream{
 		}
 	}
 
-	void File :: Add(const str& Path, void *Addr, Type DType, 
-									 std::vector<hsize_t> D){
+	void File :: Add(const str& Path, void *Addr, Type DType, std::vector<hsize_t> D){
 		// String length deduction
 		auto Dim = D;
 		if(DType == Type::String)
@@ -47,8 +46,7 @@ namespace DataStream{
 		Containers.push_back(Addr);
 	}
 
-	void File :: SetAttribute(const str& Path, const str& Name, const void *Addr, 
-														Type DType, std::vector<hsize_t> D){
+	void File :: SetAttribute(const str& Path, const str& Name, const void *Addr, Type DType, std::vector<hsize_t> D){
 		// String length deduction
 		auto Dim = D;
 		if(DType == Type::String)
@@ -57,8 +55,7 @@ namespace DataStream{
 		SetAttribute(Path, Name, Addr, MetaData(DType, Dim));
 	}
 
-	void File :: SetAttribute(const str& Path, const str& Name, 
-														const void *Addr, MetaData Info){
+	void File :: SetAttribute(const str& Path, const str& Name, const void *Addr, MetaData Info){
 		if(!CheckPath(Path)) NoPathError(Path, "attribute " + Name);
 		WriteAttribute(Vault, Path, Name, Addr, Info);
 	}
@@ -68,9 +65,9 @@ namespace DataStream{
 		ReadAttribute(Vault, Path, Name, Addr);
 	}
 
-	int File :: GetEvent(const str& Path){
+	int File :: GetNEntry(const str& Path){
 		int N = 0;
-		GetAttribute(Path, "Event", &N);
+		GetAttribute(Path, "NEntry", &N);
 		return N;
 	}
 

@@ -30,8 +30,7 @@ namespace DataStream{
 			~File() = default;
 			
 			// Initialize Kernel instances
-			void Add(const std::string&, void *Addr, Type, 
-							 std::vector<hsize_t> Dim = {1});
+			void Add(const std::string&, void *Addr, Type, std::vector<hsize_t> Dim = {1});
 			void Add(const std::string&, void*, const MetaData&);
 			void Add(const std::string&, void*);
 
@@ -50,8 +49,7 @@ namespace DataStream{
 			// Handling dataset attributes
 			void SetAttribute(const std::string& Path, const std::string& Name, 
 												const void*, Type, std::vector<hsize_t> Dim = {1});
-			void SetAttribute(const std::string&, const std::string&, const void*, 
-												MetaData);
+			void SetAttribute(const std::string&, const std::string&, const void*, MetaData);
 			void GetAttribute(const std::string&, const std::string&, void*);
 
 			// Basic file operations
@@ -87,7 +85,7 @@ namespace DataStream{
 			}
 
 			// Getter
-			int GetEvent(const std::string&);
+			int GetNEntry(const std::string&);
 			std::vector<hsize_t> GetShape(const std::string&);
 	};
 

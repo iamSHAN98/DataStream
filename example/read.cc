@@ -27,7 +27,7 @@ int main(int argc, char **argv){
 	// Initialize
 	Obj.Configure();
 
-	int N = Obj.GetEvent("Group/Data");
+	int N = Obj.GetNEntry("Group/Data");
 	std::cout << "Total event : " << N << "\n";
 
 	// Attributes

@@ -73,8 +73,7 @@ namespace DataStream{
 			}
 
 			template <typename A, typename B> constexpr
-			void AddMember(B A::*Member, std::string N, Type T, 
-										 std::vector<hsize_t> D = {1}){
+			void AddMember(B A::*Member, std::string N, Type T, std::vector<hsize_t> D = {1}){
 				MetaData Info(T, D, N);
 				if((D.size() > 1) || (D[0] > 1))
 					Info.IsArray = true;

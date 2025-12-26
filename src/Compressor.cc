@@ -16,8 +16,7 @@ namespace DataStream{
 		return false;
 	}
 
-	void Compressor :: SetCompression(hid_t DProp, Compress Choice,
-																		uint Strength){
+	void Compressor :: SetCompression(hid_t DProp, Compress Choice, uint Strength){
 		// Construct filter object
 		try{
 			if((Choice < 0) || (Choice >= CompressEnd))
@@ -51,16 +50,14 @@ namespace DataStream{
 		}
 	}
 
-	void Compressor :: GetCompression(hid_t DProp, Compress& Choice,
-																		uint& Strength){
+	void Compressor :: GetCompression(hid_t DProp, Compress& Choice, uint& Strength){
 		// Dummy variables
 		char Name[50];
 		uint Flag;
 		size_t Size = 1;
 
 		// Get filter
-		Obj.Filter = H5Pget_filter(DProp, 0, &Flag, &Size, &Level, 
-															 sizeof(Name), Name, NULL);
+		Obj.Filter = H5Pget_filter(DProp, 0, &Flag, &Size, &Level, sizeof(Name), Name, NULL);
 
 		// Re-construct filter choice
 		for(int i = 0; i < CompressEnd; i++){

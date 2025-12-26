@@ -23,12 +23,12 @@ namespace DataStream{
 
 		// HDF5 object identifiers
 		hid_t Root, DSet;
-		hid_t EventSpace, DSpace;								// Dataspace for single & all events
+		hid_t ESpace, DSpace;										// Dataspace for single & all events
 		hid_t DType;
 		hid_t CProp, DProp;											// Link & dataset creation properties
 
 		// Kernel specific attributes
-		int N;																	// Total events
+		int NEntry;															// Total entries
 		std::vector<hsize_t> Index;							// Data index in dataset
 		std::vector<hsize_t> DataDim;						// Dataset dimension
 
@@ -68,7 +68,7 @@ namespace DataStream{
 			void Read(void*, int I = 0);
 			void Close(){
 				H5Tclose(DType);
-				H5Sclose(EventSpace); H5Sclose(DSpace);
+				H5Sclose(ESpace); H5Sclose(DSpace);
 				H5Pclose(DProp);
 				if(!ReadMode) H5Pclose(CProp);
 				H5Dclose(DSet);
@@ -81,7 +81,7 @@ namespace DataStream{
 			}
 
 			// Getter
-			int GetEvent(){ return N; }
+			int GetNEntry(){ return NEntry; }
 			std::vector<hsize_t> GetShape(){ return Info.Dim; }
 			std::string GetPath(){ return Path; }
 	};
