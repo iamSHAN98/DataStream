@@ -1,28 +1,25 @@
 cmake_minimum_required(VERSION 3.10)
 project(DataStream VERSION 1.0 LANGUAGES C CXX)
 
-# Set compile options
+# Set Compile Options
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-set(CMAKE_BUILD_TYPE "Release")
 
-# Find packages
+# Find Packages
 find_package(HDF5 COMPONENTS C HL)
 
-# Source files
+# Source Files
 include_directories(include)
 file(GLOB SOURCE "src/*.cc")
 
-# Compile : library for external use
+# Compile : Library
 add_library(DataStream SHARED ${SOURCE})
 target_include_directories(DataStream PUBLIC ${HDF5_C_INCLUDE_DIRS})
-target_link_libraries(DataStream PUBLIC ${HDF5_C_LIBRARIES}
-										${HDF5_C_HL_LIBRARIES})
+target_link_libraries(DataStream PUBLIC ${HDF5_C_LIBRARIES} ${HDF5_C_HL_LIBRARIES})
 
-set(${PROJECT_NAME}_INCLUDE ${PROJECT_SOURCE_DIR}/include 
-							${HDF5_C_INCLUDE_DIRS}
+set(${PROJECT_NAME}Include ${PROJECT_SOURCE_DIR}/include ${HDF5_C_INCLUDE_DIRS}
     CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
 
-# Compile : example programs
+# Compile : Example Programs
 add_subdirectory(example)
