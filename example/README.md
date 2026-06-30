@@ -1,198 +1,149 @@
 # Using DataStream
 
-DataStream is a namespace region organizing a set of
-modules  and functions to handle  event-by-event I/O
-operations in HDF5 files : automating initialization
-of HDF5 object instances and calling I/O methods.
+The DataStream namespace contains a set of classes and functions to
+handle I/O operations for each entry of a dataset. This involves
+initializing the necessary HDF5 object instances and calling the
+required I/O methods. Following is a brief summary of DataStream
+identifiers, at least those required from an user's perspective. For
+example use cases, refer to [write.cc](write.cc) and [read.cc](read.cc).
 
-*Following is a brief introduction to DataStream 
-identifiers, at least those required from an user's
-perspective* (*refer to* [write.cc](write.cc) *and*
-[read.cc](read.cc)).
+## Keywords
 
-## [Keywords](../include/Keyword.h)
+C enum (global) variables (see [include/Keyword.h](../include/Keyword.h)),
+given as choices to DataStream classes and functions:
 
-<details>
-  <summary> Expand </summary>
+  | Keyword    | Purpose                       |
+  | :--------: | :---------------------------: |
+  | `Access`   | File access privileges        |
+  | `Type`     | HDF5 data-types               |
+  | `Compress` | HDF5 data compression filters |
 
-  `C enum`  (global) variables  as choices  given to 
-  modules
+## MetaData
 
-  - `Access` : file access privileges
-
-  - `Type` : HDF5 data-types
-
-  - `Compress` : data compression filters
-
-</details>
-
-## [MetaData](../include/MetaData.h)
-
-<details>
-  <summary> Expand </summary>
-
-  Initialize  `MetaData` instance using default (and 
-  only) constructor
+Initialize a `MetaData` instance using the default constructor:
 
   ```cpp
-  MetaData(Type DataType, vector<hsize_t> DataShape, string Name)
+  MetaData(Type DataType, std::vector<hsize_t> DataShape, std::string Name)
   ```
-
-  For user-defined data-types (`Type::Compound`), use 
-  `AddMember` method to add member variables
+For user-defined data-types (i.e. `Type::Compound`), use the
+`MetaData::AddMember` method to add member variables:
 
   ```cpp
-  AddMember(&Class::Variable, string Name, Type DataType, vector<hsize_t> DataShape)
+  AddMember(&Class::Variable, std::string Name, Type DataType, std::vector<hsize_t> DataShape)
   ```
+Except `Class::Variable`, the remaining arguments can be replaced
+by an equivalent `MetaData` instance. The following methods are
+called internally to initialize necessary HDF5 object instances. For
+details, see [include/MetaData.h](../include/MetaData.h) and
+[src/MetaData.cc](../src/MetaData.cc).
 
-  `Class`, `Variable`  are template arguments. Rest
-  of the arguments can be replaced by an equivalent
-  `MetaData` instance. The methods
+  | Method                   | Purpose                         |
+  | :----------------------: | :-----------------------------: |
+  | `MetaData::GetDataType`  | Returns HDF5 data-type (`H5T`)  |
+  | `MetaData::GetDataSpace` | Returns HDF5 data-space (`H5S`) |
 
-  - `GetDataType` creates HDF5 data-type (`H5T`)
+## File
 
-  - `GetDataSpace`  creates  HDF5 data-space (`H5S`)
-
-  However, these methods are for internal use only.
-
-</details>
-
-## [File](../include/File.h)
-
-<details>
-  <summary> Expand </summary>
-
-  `File` is the module for invoking HDF5 I/O routines
-  from the user's end. Initialization  is done using
-  the constructor
+`File` class contains I/O routines for HDF5 files to be invoked from
+the user's end. File creation is done using the following constructor,
+equivalent to calling the empty constructor and then the
+`File::Initialize` method with same arguments:
 
   ```cpp
-  File(string FileName, Access FileAccess)
+  File(std::string FileName, Access FileAccess)
   ```
+The basic data handling operation involves storing / accessing a single
+entry of a dataset and requires the following methods. For details, see
+[include/File.h](../include/File.h) and [src/File.cc](../src/File.cc).
 
-  This is equivalent to calling the empty  instructor
-  followed by `Initialize` method with same arguments. 
-  Basic data handling requires calling three methods
+  | Method            | Purpose                                                                              |
+  | :---------------: | :----------------------------------------------------------------------------------: |
+  | `File::Add`       | Stores dataset path (string) and data- <br>container (pointer) for HDF5 file (`H5F`) |
+  | `File::Configure` | Creates HDF5 data-set (`H5D`) instances<br>based on private `MetaData` instances     |
+  | `File::Read`      | Loads data from dataset in file<br>to data-container in memory                       |
+  | `File::Write`     | Flushes data from memory to file                                                     |
 
-  1. `Add` : initialize `File` instance with dataset
-     path and data-container (as pointer)
+Depending upon `Access::Read` and `Access::Write` (or `Access::ReadWrite`)
+there are additional arguments required for `File::Add`. `File::Configure`
+internally (re-)creates HDF5 data-sets based on these arguments (when
+writing) or from the information stored along with the data-sets.
 
-  2. `Configure` : create HDF5 data-type, data-space
-     and  data-set  (`H5D`) instances  in order  to 
-     access dataset at given path in file
+  #### Read
 
-  3. `Read` / `Write`
-
-  Depending upon `Access::Read` and  `Access::Write`
-  there  are additional arguments  to above methods.
-  `Access::ReadWrite`  grants read and write access
-  to different datasets within same file.
-
-### Write
-
-- Type and shape of data (or `MetaData` instance)
-  must be provided through `Add`
+  When reading from file, only the dataset path and a pointer for an
+  appropriate data-container are needed to be passed to `File::Add`:
 
   ```cpp
-  Add(string Path, const void *Pointer, Type DataType, vector<hsize_t> DataShape)
+  Add(std::string Path, void *Pointer)
   ```
 
-- Number of events (or steps, default is 1) through
-  `Configure`
+  #### Write
 
-### Read
+  When writing to file, type, shape of the data (or a `MetaData`
+  instance), and the number of entries (default is 1) must be given
+  to `File::Add` and `File::Configure`:
 
-No additional input required
+  ```cpp
+  Add(std::string Path, const void *Pointer, Type DataType, std::vector<hsize_t> DataShape)
+  ```
 
-```cpp
-Add(string Path, void *Pointer)
-```
+## Kernel
 
-`Configure` internally re-constructs DataStream
-identifiers from information imprinted along the
-data-set being read.
+`File::Add` initializes a set of `Kernel` instances, each associated
+with a dataset, to handle the creation and initialization of HDF5
+objects via the following methods. For details, see [include/Kernel.h](../include/Kernel.h)
+and [src/Kernel.cc](../src/Kernel.cc).
 
-</details>
-
-## [Kernel](../include/Kernel.h)
-
-<details>
-  <summary> Expand </summary>
-
-  `File::Add` internally creates a `Kernel` instance
-  that  explicitly works  with HDF5 module to access
-  data-sets. Hence, `File`  is just an interface for
-  a bunch of `Kernel` instances which in turn is the
-  same for data-sets being read and written to.
-
-</details>
+  | Method                       | Purpose                                                                        |
+  | :--------------------------: | :----------------------------------------------------------------------------: |
+  | `Kernel::ConfigureType`      | Configures HDF5 data-type instance (`H5T`)                                     |
+  | `Kernel::ConfigureDimension` | Creates HDF5 data-set (`H5D`) based on<br>given dimension (`Shape` x `NEntry`) |
+  | `Kernel::ConfigureProperty`  | Handles dataset creation properties e.g.<br>chunking, setting compression etc. |
+  | `Kernel::ConfigureAttribute` | Reads / writes default attributes : dataset shape<br>(`Shape`) and number of entries (`NEntry`) |
 
 ## Compression
 
-<details>
-  <summary> Expand </summary>
-
-  [Compressor](../include/Compressor.h)  adds compression filter (`H5Z`)
-  to data-set creation property list  (`H5P`) based
-  on  compression  method and  level provided. Each
-  `Kernel`  instance has `Compressor` instance as a
-  private  member. Interface  for initializing  all
-  at once is the `File` method
+The `Compressor` class adds HDF5 compression filters (`H5Z`) to dataset
+creation property list (`H5P`) based on the user's choice of compression 
+method and level of compression. For details, see [include/Compressor.h
+](../include/Compressor.h)and [src/Compressor.cc](src/Compressor.cc).
+The method `Kernel::SetCompression` initializes a `Compressor` instance
+internally:
 
   ```cpp
   SetCompression(Compress Filter, uint Level)
   ```
-
-  It must be done before `File::Configure` otherwise
-  default options are chosen :  `Compress::GZip` and
-  `Level = 5`.
-
-</details>
+The default choice is `Compress::GZip` at Level 5. Any other choice
+for all the `Kernel` instances can be set by `File::SetCompression` with
+same arguments as `Kernel::SetCompression` but must be done before calling
+`File::Configure`.
 
 ## Attributes
 
-<details>
-  <summary> Expand </summary>
+AttributeHandler (see [include/AttributeHandler.h](../include/AttributeHandler.h))
+consists of the following functions to work with HDF5 attribute (`H5A`)
+instances:
 
-  [AttributeHandler](../include/AttributeHandler.h) consists of base functions
-  for work with attributes 
+  | Function         | Purpose                                                   |
+  | :--------------: | :-------------------------------------------------------: |
+  | `FindAttribute`  | Searches for an attribute by name at a given path in file |
+  | `WriteAttribute` | Writes an attribute at the specified path from memory     |
+  | `ReadAttribute`  | Reads an attribute by name from given path to memory      |
 
-  - `FindAttribute` : looks for an attribute by name
-    at given path
-
-  - `WriteAttribute` : writes an attribute at given
-    path with data-type, data-shape, data-container
-    specified for its value
-
-  - `ReadAttribute` : reads an attribute by name from
-    given path with data-container specified to store
-    its value
-
-  These are used internally by the following  `File`
-  methods
+These are used internally by the following  `File` methods:
 
   ```cpp
-  SetAttribute(string Path, string Name, const void *Pointer, MetaData)
-  GetAttribute(string Path, string Name, void *Pointer)
+  SetAttribute(std::string Path, std::string Name, const void *Pointer, MetaData)
+  GetAttribute(std::string Path, std::string Name, void *Pointer)
   ```
-
-  Path may point to a data-set or a group (created
-  as a link during data-set creation) but it must
-  exist beforehand for DataStream to work on. Hence,
-  these can only be called after  `File::Configure`.
-  Each data-set created with `Kernel` has 2 default
-  attributes : `Event` and `Shape`.
-
-</details>
+Path may point to a data-set or a group (created as an intermediate link). All
+I/O operations for attributes can only happen after calling `File::Configure`.
+As mentioned already, each data-set created via `Kernel` instances has 2 default
+attributes: `NEntry` (integer) and `Shape` (1D integer array).
 
 ## Errors
 
-<details>
-  <summary> Expand </summary>
-
-  [ErrorHandler](../include/ErrorHandler.h) consists  of functions, using
-  `stdexcept`  (C++  STL), to provide  short  error 
-  messages  in  place of  HDF5 error-stack (`H5E`). 
-  However, these are for internal use only.
-
-</details>
+ErrorHandler consists of functions that use `stdexcept` (C++ STL), to
+report short error messages, replacing the HDF5 error-stack (`H5E`).
+However, these are for internal use only. For details, see
+[include/ErrorHandler.h](../include/ErrorHandler.h).
