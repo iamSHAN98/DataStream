@@ -1,26 +1,25 @@
 # DataStream
 
-DataStream is a C++ wrapper based on [HDF5 C API](http://portal.hdfgroup.org/display/HDF5/Core+Library)
-for  storing data  in an  eventwise (e.g. Monte Carlo 
-event  generation) or stepwise  (e.g. solving initial 
-value  problems) manner.  In principle,  data for  an 
-event  (step)  is  stacked  on top  of data  from the
-previous event  (step). In case  of multi-dimensional 
-data, such stacking  is always  done  along the first
-axis. The  very purpose of DataStream  is to simplify
-such  a data-storing  process in  HDF5 files within a
-few lines of code and also generalize it for any type
-of data with arbitrary dimensions.
+DataStream is a C++ wrapper for [HDF5 C API](http://portal.hdfgroup.org/display/HDF5/Core+Library)
+to store large datasets in HDF5 files by its' entries. Possible use
+cases may involve storing output of a Monte Carlo event generator
+(event-wise), or storing solution at each step of an initial value
+problem (step-wise). In principle, each entry of such a dataset is
+stacked on top of each other to represent the entirety of it. In
+case of multi-dimensional data, this stacking is taken along the
+first axis. The very purpose of DataStream is to simplify such a
+data-storing process for HDF5 files within a few lines of code.
 
 ## Installation
 
-### Pre-requisites
-  - `cmake` to build DataStream and external plugins,
-  - `zlib` and `libaec` for pre-defined  compression
-    methods GZip and SZip provided with HDF5
+### Pre-Requisites
 
-  One  may use  the package manager for installation.
-  For Debian-based distros
+  - `cmake` to build DataStream and external plugins.
+  - `zlib` and `libaec` for compression methods GZip
+  and SZip provided with HDF5
+
+  One may use the package manager for installing these.
+  For Debian-based distros,
 
   ```shell
   sudo apt install cmake
@@ -29,123 +28,135 @@ of data with arbitrary dimensions.
 
 ### HDF5 C
 
+The easiest way to install the HDF5 library and the
+required binaries, is again using the package manager,
+
+```shell
+sudo apt install libhdf5-dev hdf5-tools
+```
+or, one can do it manually as outlined below
+
+#### Manual Installation (Long & Boring)
+
 <details>
   <summary> Expand </summary>
 
-  DataStream requires  only  C bindings  that  can be
-  built from source
+  DataStream requires only the HDF5 C bindings which
+  can be compiled from source
 
   - Create an  installation directory  and  define an
     environment  variable  using  its' absolute  path
-    (for ease of configuration later)
+    for the ease of configuration as mentioned later
 
     ```shell
     mkdir path/to/HDF5
-    export HDF5_Path=path/to/HDF5
+    export HDF5Path=path/to/HDF5
     ```
+    *Append the last line to the shell profile file (e.g.*
+    `.bashrc` *in case of Bash)*.
 
-    *Append last line to* `.bashrc` (*or* `.profile`)
-
-  - Extract the [source](https://github.com/HDFGroup/hdf5/tags) (pick any one)
+  - Download and extract the HDF5 [source](https://github.com/HDFGroup/hdf5/tags)
+    (pick any)
 
     ```shell
-    tar -xzf hdf5-hdf5-x_yy_z.tar.gz
+    tar -xzf hdf5-x_yy_z.tar.gz
+    cd hdf5-x_yy_z
     ```
 
-  - Launch `configure` script specifying installation
-    path  and configuration  options for  compression 
-    libraries
+  - Execute the `configure` script specifying installation
+    path and configuration options for compression 
+    libraries of choice
 
     ```shell
-    cd hdf5-hdf5-x_yy_z
-    ./configure --prefix=$HDF5_Path --with-zlib --with-szlib
+    ./configure --prefix=$HDF5Path --with-zlib --with-szlib
     make -jN install
     ```
-
-    *Replace* `N` *with desired number of threads for
+    *Replace* N *with the desired number of threads for
      parallel compilation*
 
   - Add HDF5 binaries and scripts to `PATH` and verify
-    installation
+    if the installation is successful or not
 
     ```shell
-    export PATH=$PATH:$HDF5_Path/bin
+    export PATH=$PATH:$HDF5Path/bin
     h5cc --version
     ```
 
 </details>
 
-### External Plugins (Optional)
+#### External Plugins (Optional)
 
 <details>
   <summary> Expand </summary>
 
-  HDF5 (version >= `1.8.11`) enables [dynamic filter loading](https://docs.hdfgroup.org/hdf5/rfc/HDF5DynamicallyLoadedFilters.pdf) 
-  e.g.  applying  non-native  compression  filters at 
-  runtime. DataStream  comes configured with two such
-  methods BZip2 and ZStd.
+  HDF5 (version >= `1.8.11`) enables [dynamic filter loading
+  ](https://support.hdfgroup.org/releases/hdf5/documentation/rfc/HDF5DynamicallyLoadedFilters.pdf)
+  e.g. applying non-native compression filters at runtime.
+  DataStream comes configured with two such methods, BZip2
+  and ZStd.
 
-  - Install corresponding libraries
+  - Install the corresponding libraries
     
     ```shell
     sudo apt install libbz2-dev libzstd-dev
     ```
 
-  - Install [BZip2 filter plugin](https://github.com/nexusformat/HDF5-External-Filter-Plugins.git)
+  - Install the BZip2 [filter plugin](https://github.com/nexusformat/HDF5-External-Filter-Plugins.git)
 
     ```shell
     git clone https://github.com/nexusformat/HDF5-External-Filter-Plugins.git
     cd HDF5-External-Filter-Plugins
-    cmake . -DCMAKE_INSTALL_PREFIX=$HDF5_Path -DENABLE_BZIP2_PLUGIN=True
+    cmake . -DCMAKE_INSTALL_PREFIX=$HDF5Path -DENABLE_BZIP2_PLUGIN=True
     make install
     ```
+    *The plugin gets installed at* `HDF5Path/lib/plugins`
 
-    *Plugin gets installed at* `HDF5_Path/lib/plugins`
-
-  - Install [ZStd filter plugin](https://github.com/aparamon/HDF5Plugin-Zstandard)
+  - Install the ZStd [filter plugin](https://github.com/aparamon/HDF5Plugin-Zstandard)
     
     ```shell
     git clone https://github.com/aparamon/HDF5Plugin-Zstandard.git
     cd HDF5Plugin-Zstandard
-    cmake . -DPLUGIN_INSTALL_PATH=$HDF5_Path/lib/plugins
+    cmake . -DPLUGIN_INSTALL_PATH=$HDF5Path/lib/plugins
     make install
     ```
 
-  - Define environment variable for plugin installation
-   (append to `.bashrc`)
+  - Define an environment variable for the plugin installation
+    path and append the same to the shell profile
 
     ```shell
-    export HDF5_PLUGIN_PATH=$HDF5_Path/lib/plugins
+    export HDF5PluginPath=$HDF5Path/lib/plugins
     ```
 
 </details>
 
 ### DataStream
 
-Building DataStream as a standalone library is pretty
-straight-forward
+At this point, building DataStream as a standalone library
+is pretty straight-forward
 
 ```shell
 git clone https://github.com/iamSHAN98/DataStream.git
-cd DataStream
-mkdir build && cd build
-cmake ..
-make -jN
+cd DataStream && mkdir build && cd build
+cmake .. && make -jN
 ```
 
-Above defines the CMake variables `DataStream_INCLUDE`
-(associated  header files) and  `DataStream` (shared
-library object `libDataStream`) required for linking
-code against DataStream as an external library (see
-[example/CMakeLists.txt](example/CMakeLists.txt)). In that case, provide 
-DataStream source path to project's CMakeLists.txt
+This defines the CMake variables, `DataStreamInclude`
+(header files) and `DataStream` (dynamically linked library)
+that can be used to link code against DataStream (see
+[example/CMakeLists.txt](example/CMakeLists.txt)). In that
+case, provide DataStream source path to the project's
+CMakeLists.txt
 
   ```cmake
   # Project's CMakeLists.txt
-  set(DSPATH path/to/source)
-  add_subdirectory(${DSPATH} DataStream)
+  set(DataStreamPath path/to/DataStream)
+  add_subdirectory(${DataStreamPath} DataStream)
   ```
 
-## [Using DataStream](example/README.md)
+## Using DataStream
 
-## [DataStream in Python](python/README.md)
+See [example/README.md](example/README.md).
+
+## DataStream in Python
+
+See [python/README.md](python/README.md).

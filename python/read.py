@@ -17,7 +17,7 @@ import datastream as ds
 file = h5py.File(sys.argv[1], 'r')
 
 dset = ds.get_data(file, "Group/Data")
-N = ds.get_event(file, "Group/Data")
+N = ds.get_nentry(file, "Group/Data")
 gen = ds.get_attribute(file, "Group", "Generator")
 
 area = dset['x']**2 + dset['y']**2

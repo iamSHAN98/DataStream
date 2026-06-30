@@ -5,7 +5,7 @@
 def get_data(file, path) :
     dset = file[path]
     dim = dset.attrs["Shape"]
-    nev = dset.attrs["Event"][0]
+    nev = dset.attrs["NEntry"][0]
 
     arr = dset[:]
 
@@ -15,10 +15,10 @@ def get_data(file, path) :
     return arr
 
 """
-    get_data_ebe : Returns data for a single event : 'index'
-                   corresponds to event no (index + 1)
+    get_entry : Returns a single entry : 'index' corresponds
+                to entry no 'index + 1'
 """
-def get_data_ebe(file, path, index = 0) :
+def get_entry(file, path, index = 0) :
     dset = file[path]
     dim_x = int(dset.attrs["Shape"][0])
 
@@ -34,14 +34,14 @@ def get_data_ebe(file, path, index = 0) :
     return arr                          # Matrix data
 
 """
-    get_event : Returns total no of events, stored as an
+    get_nentry : Returns total no of entrys, stored as an
                 attribute of corresponding dataset
 """
-def get_event(file, path) :
-    return file[path].attrs['Event'][0]
+def get_nentry(file, path) :
+    return file[path].attrs['NEntry'][0]
 
 """
-    get_shape : Returns shape of data for a single event,
+    get_shape : Returns shape of data for a single entry,
                 stored as an attribute of corresponding
                 dataset.
 """
