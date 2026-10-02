@@ -47,6 +47,4 @@ namespace DataStream{
 		return H5Screate_simple(Dim.size(), Dim.data(), NULL);
 	}
 
-	size_t MetaData :: GetDimension(){ return Dim.size(); }
-
 }

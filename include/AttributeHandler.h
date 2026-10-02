@@ -11,17 +11,17 @@
 namespace DataStream{
 
 	static bool FindAttribute(hid_t Loc, std::string Path, std::string Name){
-		return (H5Aexists_by_name(Loc, Path.c_str(), Name.c_str(), H5P_DEFAULT) > 0);
+		return H5Aexists_by_name(Loc, Path.c_str(), Name.c_str(), H5P_DEFAULT) > 0;
 	}
 
 	static void WriteAttribute(hid_t Loc, std::string Path, std::string Name, const void *Addr, MetaData Info){
 		if(FindAttribute(Loc, Path, Name)) AttributeError(Name, Path);
 
 		hid_t AType = Info.GetDataType();
-		hsize_t ADim = Info.GetDimension();
+		hsize_t ADim = Info.GetNDimension();
 		hid_t ASpace = H5Screate_simple(1, &ADim, NULL);
 		hid_t Attr = H5Acreate_by_name(Loc, Path.c_str(), Name.c_str(), AType, ASpace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-		
+
 		H5Awrite(Attr, AType, Addr);
 
 		H5Tclose(AType);

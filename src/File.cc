@@ -25,12 +25,9 @@ namespace DataStream{
 		}
 	}
 
-	void File :: Add(const str& Path, void *Addr, Type DType, std::vector<hsize_t> D){
+	void File :: Add(const str& Path, void *Addr, Type DType, std::vector<hsize_t> Dim){
 		// String length deduction
-		auto Dim = D;
-		if(DType == Type::String)
-			Dim = {strlen(static_cast<const char*>(Addr))};
-
+		if(DType == Type::String) Dim = {strlen(static_cast<const char*>(Addr))};
 		Add(Path, Addr, MetaData(DType, Dim));
 	}
 
@@ -46,12 +43,9 @@ namespace DataStream{
 		Containers.push_back(Addr);
 	}
 
-	void File :: SetAttribute(const str& Path, const str& Name, const void *Addr, Type DType, std::vector<hsize_t> D){
+	void File :: SetAttribute(const str& Path, const str& Name, const void *Addr, Type DType, std::vector<hsize_t> Dim){
 		// String length deduction
-		auto Dim = D;
-		if(DType == Type::String)
-			Dim = {strlen(static_cast<const char*>(Addr))};
-
+		if(DType == Type::String) Dim = {strlen(static_cast<const char*>(Addr))};
 		SetAttribute(Path, Name, Addr, MetaData(DType, Dim));
 	}
 

@@ -84,7 +84,10 @@ namespace DataStream{
 			// Getter
 			hid_t GetDataType();
 			hid_t GetDataSpace();
-			size_t GetDimension();
+
+			std::vector<hsize_t> GetDimension(){ return Dim; }
+			size_t GetNDimension(){ return Dim.size(); }
+
 	};
 	
 }
