@@ -16,6 +16,11 @@ namespace DataStream {
 		H5Z_filter_t Filter;
 		std::string Name = "";
 		uint Min, Max, Step = 1;
+
+		Algo() = default;
+
+		Algo(H5Z_filter_t Type, std::string Label, uint MaxLevel, uint MinLevel, uint LevelStep = 1) :
+		Filter(Type), Name(Label), Max(MaxLevel), Min(MinLevel), Step(LevelStep) {}
 	};
 
 	// Maintain order as in Keyword.h

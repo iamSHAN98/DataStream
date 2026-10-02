@@ -55,7 +55,7 @@ namespace DataStream{
 			~MetaData() = default;
 
 			// Member initialization of compound data-types
-			template <typename A, typename B> constexpr
+			template <typename A, typename B>
 			void AddMember(B A::*Member, const MetaData& Info){
 				if(DType != DataStream::Compound)
 					CompoundTypeError();
@@ -72,7 +72,7 @@ namespace DataStream{
 				Offsets.push_back(Offset);
 			}
 
-			template <typename A, typename B> constexpr
+			template <typename A, typename B>
 			void AddMember(B A::*Member, std::string N, Type T, std::vector<hsize_t> D = {1}){
 				MetaData Info(T, D, N);
 				if((D.size() > 1) || (D[0] > 1))
